@@ -46,7 +46,24 @@ export const supabase = (() => {
 })()
 
 // Client component client (for use in client components)
-export const createSupabaseClient = () => createClientComponentClient()
+export const createSupabaseClient = () => {
+  // For client components, use the same client instance
+  if (typeof window !== 'undefined') {
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
+    )
+  }
+  // Fallback for SSR
+  return createClientComponentClient()
+}
 
 // Database Types
 export interface Database {
